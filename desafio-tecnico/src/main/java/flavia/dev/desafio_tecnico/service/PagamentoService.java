@@ -1,0 +1,64 @@
+package flavia.dev.desafio_tecnico.service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import flavia.dev.desafio_tecnico.model.Pagamento;
+import flavia.dev.desafio_tecnico.model.StatusPagamento;
+import flavia.dev.desafio_tecnico.repository.PagamentoRepository;
+
+@Service
+public class PagamentoService {
+
+    @Autowired
+    private PagamentoRepository pagamentoRepository;
+
+    public Pagamento criarPagamento(Pagamento pagamento) {
+        pagamento.setStatus(StatusPagamento.PENDENTE);
+        return pagamentoRepository.save(pagamento);
+    }
+
+    public List<Pagamento> listarPagamentos(Integer codigoDebito, String cpfCnpj, StatusPagamento status) {
+        if (codigoDebito != null) {
+            return pagamentoRepository.findByCodigoDebito(codigoDebito);
+        } else if (cpfCnpj != null) {
+            return pagamentoRepository.findByCpfCnpj(cpfCnpj);
+        } else if (status != null) {
+            return pagamentoRepository.findByStatus(status);
+        }
+        return pagamentoRepository.findByAtivo(true);
+    }
+
+    public Pagamento atualizarStatus(Long id, StatusPagamento novoStatus) {
+        Pagamento pagamento = pagamentoRepository.findById(id)
+        		.orElseThrow(() -> new NoSuchElementException("Pagamento não encontrado"));
+
+        
+        if (pagamento.getStatus() == StatusPagamento.PROCESSADO_SUCESSO) {
+            throw new IllegalStateException("Pagamento já processado com sucesso, não pode ser alterado.");
+        }
+        
+        if (pagamento.getStatus() == StatusPagamento.PROCESSADO_FALHA && novoStatus != StatusPagamento.PENDENTE) {
+            throw new IllegalStateException("Pagamento processado com falha só pode voltar para pendente.");
+        }
+
+        pagamento.setStatus(novoStatus);
+        return pagamentoRepository.save(pagamento);
+    }
+
+    public void excluirPagamento(Long id) {
+        Pagamento pagamento = pagamentoRepository.findById(id)
+        		.orElseThrow(() -> new NoSuchElementException("Pagamento não encontrado"));
+
+        
+        if (pagamento.getStatus() == StatusPagamento.PENDENTE) {
+            pagamento.setAtivo(false);
+            pagamentoRepository.save(pagamento);
+        } else {
+            throw new IllegalStateException("Somente pagamentos pendentes podem ser excluídos.");
+        }
+    }
+}
