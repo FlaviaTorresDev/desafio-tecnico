@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import flavia.dev.desafio_tecnico.model.MetodoPagamento;
 import flavia.dev.desafio_tecnico.model.Pagamento;
 import flavia.dev.desafio_tecnico.model.StatusPagamento;
 import flavia.dev.desafio_tecnico.repository.PagamentoRepository;
@@ -17,8 +18,20 @@ public class PagamentoService {
     private PagamentoRepository pagamentoRepository;
 
     public Pagamento criarPagamento(Pagamento pagamento) {
+        validarNumeroCartao(pagamento);
         pagamento.setStatus(StatusPagamento.PENDENTE);
         return pagamentoRepository.save(pagamento);
+    }
+
+    private void validarNumeroCartao(Pagamento pagamento) {
+        if ((pagamento.getMetodoPagamento() == MetodoPagamento.CARTAO_CREDITO 
+                || pagamento.getMetodoPagamento() == MetodoPagamento.CARTAO_DEBITO)) {
+            if (pagamento.getNumeroCartao() == null || pagamento.getNumeroCartao().isEmpty()) {
+                throw new IllegalArgumentException("O número do cartão é obrigatório para pagamentos com cartão de crédito ou débito.");
+            }
+        } else if (pagamento.getNumeroCartao() != null) {
+            throw new IllegalArgumentException("O número do cartão não deve ser preenchido para métodos de pagamento diferentes de cartão de crédito ou débito.");
+        }
     }
 
     public List<Pagamento> listarPagamentos(Integer codigoDebito, String cpfCnpj, StatusPagamento status) {

@@ -23,17 +23,19 @@ public class Pagamento {
     @Column(nullable = false, unique = true)
     private String cpfCnpj;
 
-
+    @Enumerated(EnumType.STRING)
+    private MetodoPagamento metodoPagamento;
+    
     private String numeroCartao;
 
     private BigDecimal valor;
+    
     private boolean ativo = true;
 
     @Enumerated(EnumType.STRING)
     private StatusPagamento status;
     
-    @Enumerated(EnumType.STRING)
-    private MetodoPagamento metodoPagamento;
+   
 
 
 }
