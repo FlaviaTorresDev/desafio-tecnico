@@ -38,10 +38,3 @@ public class Pagamento {
 
 }
 
-public enum MetodoPagamento {
-    BOLETO, PIX, CARTAO_CREDITO, CARTAO_DEBITO
-}
-
-public enum StatusPagamento {
-    PENDENTE, PROCESSADO_SUCESSO, PROCESSADO_FALHA
-}
