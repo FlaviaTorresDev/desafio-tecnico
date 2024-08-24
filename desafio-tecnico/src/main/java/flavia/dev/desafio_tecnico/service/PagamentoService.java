@@ -41,10 +41,10 @@ public class PagamentoService {
             return pagamentoRepository.findByCpfCnpj(cpfCnpj);
         } else if (status != null) {
             return pagamentoRepository.findByStatus(status);
+        } else {
+            return pagamentoRepository.findAll();
         }
-        return pagamentoRepository.findByAtivo(true);
     }
-
     public Pagamento atualizarStatus(Long id, StatusPagamento novoStatus) {
         Pagamento pagamento = pagamentoRepository.findById(id)
         		.orElseThrow(() -> new NoSuchElementException("Pagamento não encontrado"));
