@@ -34,22 +34,33 @@ public class PagamentoController {
         return new ResponseEntity<>(novoPagamento, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public List<Pagamento> listarPagamentos(@RequestParam(required = false) Integer codigoDebito,
-                                            @RequestParam(required = false) String cpfCnpj,
-                                            @RequestParam(required = false) StatusPagamento status) {
-        return pagamentoService.listarPagamentos(codigoDebito, cpfCnpj, status);
+    @GetMapping("/codigo-debito/{codigoDebito}")
+    public ResponseEntity<List<Pagamento>> listarPorCodigoDebito(@PathVariable Integer codigoDebito) {
+        List<Pagamento> pagamentos = pagamentoService.listarPorCodigoDebito(codigoDebito);
+        return ResponseEntity.ok(pagamentos);
     }
 
-    @PutMapping("/atualizarStatus/{id}")
+    @GetMapping("/cpf-cnpj/{cpfCnpj}")
+    public ResponseEntity<List<Pagamento>> listarPorCpfCnpj(@PathVariable String cpfCnpj) {
+        List<Pagamento> pagamentos = pagamentoService.listarPorCpfCnpj(cpfCnpj);
+        return ResponseEntity.ok(pagamentos);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Pagamento>> listarPorStatus(@PathVariable StatusPagamento status) {
+        List<Pagamento> pagamentos = pagamentoService.listarPorStatus(status);
+        return ResponseEntity.ok(pagamentos);
+    }
+
+    @PutMapping("/atualizar/{id}")
     public ResponseEntity<Pagamento> atualizarStatus(@PathVariable Long id, @RequestParam StatusPagamento novoStatus) {
         Pagamento pagamentoAtualizado = pagamentoService.atualizarStatus(id, novoStatus);
         return ResponseEntity.ok(pagamentoAtualizado);
     }
 
-    @DeleteMapping("/excluirPagamento/{id}")
-    public ResponseEntity<Void> excluirPagamento(@PathVariable Long id) {
-        pagamentoService.excluirPagamento(id);
+    @DeleteMapping("/excluirPagamento/{codigoDebito}")
+    public ResponseEntity<Void> excluirPagamento(@PathVariable Long codigoDebito) {
+        pagamentoService.excluirPagamento(codigoDebito);
         return ResponseEntity.noContent().build();
     }
 }

@@ -24,7 +24,7 @@ public class Pagamento {
     private int codigoDebito;
 
     @NotNull(message = "O CPF ou CNPJ é obrigatório.")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String cpfCnpj;
 
     @NotNull(message = "O método de pagamento é obrigatório.")

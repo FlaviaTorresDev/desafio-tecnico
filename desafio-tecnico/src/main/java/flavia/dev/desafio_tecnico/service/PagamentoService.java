@@ -34,21 +34,24 @@ public class PagamentoService {
         }
     }
 
-    public List<Pagamento> listarPagamentos(Integer codigoDebito, String cpfCnpj, StatusPagamento status) {
-        if (codigoDebito != null) {
-            return pagamentoRepository.findByCodigoDebito(codigoDebito);
-        } else if (cpfCnpj != null) {
-            return pagamentoRepository.findByCpfCnpj(cpfCnpj);
-        } else if (status != null) {
-            return pagamentoRepository.findByStatus(status);
-        } else {
-            return pagamentoRepository.findAll();
-        }
+
+    
+    public List<Pagamento> listarPorCodigoDebito(Integer codigoDebito) {
+        return pagamentoRepository.findByCodigoDebito(codigoDebito);
     }
+
+    public List<Pagamento> listarPorCpfCnpj(String cpfCnpj) {
+        return pagamentoRepository.findByCpfCnpj(cpfCnpj);
+    }
+
+    public List<Pagamento> listarPorStatus(StatusPagamento status) {
+        return pagamentoRepository.findByStatus(status);
+    }
+    
+    
     public Pagamento atualizarStatus(Long id, StatusPagamento novoStatus) {
         Pagamento pagamento = pagamentoRepository.findById(id)
-        		.orElseThrow(() -> new NoSuchElementException("Pagamento não encontrado"));
-
+            .orElseThrow(() -> new NoSuchElementException("Pagamento não encontrado"));
         
         if (pagamento.getStatus() == StatusPagamento.PROCESSADO_SUCESSO) {
             throw new IllegalStateException("Pagamento já processado com sucesso, não pode ser alterado.");
@@ -62,8 +65,8 @@ public class PagamentoService {
         return pagamentoRepository.save(pagamento);
     }
 
-    public void excluirPagamento(Long id) {
-        Pagamento pagamento = pagamentoRepository.findById(id)
+    public void excluirPagamento(Long codigoDebito) {
+        Pagamento pagamento = pagamentoRepository.findById(codigoDebito)
         		.orElseThrow(() -> new NoSuchElementException("Pagamento não encontrado"));
 
         
